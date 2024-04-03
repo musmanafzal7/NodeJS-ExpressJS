@@ -1,0 +1,444 @@
+openapi: 3.0.0
+info:
+  title: Boilerplate RestApi,
+  description: A collection of API endpoints built for the Boilerplat RestApi Platform 3.0
+  version: 2.0.0
+servers:
+  - url: http://nodejs.ssasoft.com:3002/api/v1
+    description: Stagging dev server
+  - url: http://localhost:3002/api/v1
+    description: Local dev server
+tags:
+  - name: Authorization
+    description: Authentication collection
+  - name: 'Users'
+    description: Users collection
+components:
+  securitySchemes:
+    bearerAuth: 
+      type: http 
+      scheme: bearer 
+      bearerFormat: JWT
+  schemas:
+    UpdateUser:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dob:
+          type: string
+          format: date
+        gender:
+          type: string
+        contact:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        zipCode:
+          type: integer
+      required:  
+        - firstName
+        - lastName
+        - email
+        - gender 
+        - city
+        - state
+        - dob
+        - zipCode
+        - contact
+        - streetAddress
+      example: 
+        firstName: John
+        lastName: Smith
+        email: johnsmith@gmail.com
+        city: Los Angeles
+        state: California(CA)
+        contact: "03001234567"
+        zipCode: 90001
+        dob: '1998-03-11'
+        gender: Male
+        active: true
+        streetAddress: Los Angeles, California
+    Profile:
+      type: object 
+      required:
+        - profile
+      properties:
+        profile: 
+          type: string
+          format: binary
+    Login:
+      type: object
+      properties:
+        email:  
+          type: string
+          format: email
+          example: superadmin@admin.com
+        password:
+          type: string
+          format: password
+          example: Admin123
+      required:
+        - email
+        - password
+    Signup:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dob:
+          type: string
+          format: date
+        gender:
+          type: string
+        contact:
+          type: string
+        password:
+          type: string
+          format: password
+        confirmPassword:
+          type: string
+          format: password
+        streetAddress:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        zipCode:
+          type: integer
+      required:  
+        - firstName
+        - lastName
+        - email
+        - gender 
+        - password
+        - confirmPassword
+        - city
+        - state
+        - dob
+        - zipCode
+        - contact
+        - streetAddress
+      example: 
+        firstName: John
+        lastName: Smith
+        email: johnsmith@gmail.com
+        password: Admin123
+        confirmPassword: Admin123
+        city: Los Angeles
+        state: California(CA)
+        zipCode: 90001
+        contact: "03001234567"
+        dob: '1998-03-11'
+        gender: Male
+        active: true
+        streetAddress: Los Angeles, California
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dob:
+          type: date
+        gender:
+          type: string
+        password:
+          type: string
+          format: password
+        confirmPassword:
+          type: string
+          format: password
+        streetAddress:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        zipCode:
+          type: integer
+      example: 
+        id: 1
+        firstName: John
+        middleName: 
+        lastName: Smith
+        email: johnsmith@gmail.com
+        password: Admin123
+        confirmPassword: Admin123
+        city: Los Angeles
+        state: California(CA)
+        zipCode: 90001
+        contact: "03001234567"
+        dob: '1998-03-11'
+        gender: Male
+        streetAddress: Los Angeles, California
+        profile: ''
+        active: true
+        jwtToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJzdXBlcmFkbWluQGFkbWluLmNvbSIsImlhdCI6MTY3MjIzMzMyNCwiZXhwIjoxNjcyMzE5NzI0fQ.Mnx2PjEa53SszM0ViFMvqVDNsV9FYi8Et0D9ijqtt3I'
+paths:
+  /auth/login:
+    post:
+      tags: 
+        - Authorization
+      summary: Login the user
+      description:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+      responses:
+        '200':
+          description: 'Login successful' 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  user: 
+                    $ref: '#/components/schemas/User'
+                  token:
+                    type: string
+                    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJzdXBlcmFkbWluQGFkbWluLmNvbSIsImlhdCI6MTY3MjA1OTA1OSwiZXhwIjoxNjcyMTQ1NDU5fQ.f7sNCzjWHwXCVW6-mG0owk72o1yrGC9LppPvLPn3jAE'
+  /auth/signup:
+    post:
+      tags: 
+        - Authorization
+      summary: Creates a user.
+      description: 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Signup'
+      responses:
+        '201': 
+          description: Created successfully
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  user:
+                    $ref: '#/components/schemas/User'
+        '500':
+          description: Invalid request
+          content:
+            application/json:
+              schema: 
+                error: Invalid request object
+  /users:
+    get:
+      tags: 
+        - Users
+      security:
+        - bearerAuth: []
+      summary: Return a list of users
+      description: 
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                users:
+                  type: array
+                  items:
+                    type: object
+                    $ref: '#/components/schemas/User'
+              example: 
+                success: true
+                users:  
+                  - id: 1
+                    firstName: John
+                    middleName: 
+                    lastName: Smith
+                    email: johnsmith@gmail.com
+                    password: Admin123
+                    confirmPassword: Admin123
+                    city: Los Angeles
+                    state: California(CA)
+                    zipCode: 90001
+                    dob: '1998-03-11'
+                    gender: Male
+                    streetAddress: Los Angeles, California
+                    profile: ''
+                    active: true
+                    jwtToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJzdXBlcmFkbWluQGFkbWluLmNvbSIsImlhdCI6MTY3MjIzMzMyNCwiZXhwIjoxNjcyMzE5NzI0fQ.Mnx2PjEa53SszM0ViFMvqVDNsV9FYi8Et0D9ijqtt3I'
+  /users/{userId}:
+    delete:
+      security:
+        - bearerAuth: []
+      summary: Delete user by id
+      tags: 
+        - Users
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema: 
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean 
+                    example: true
+                  message:
+                    type: string
+                    example: Deleted successfully
+    get:
+      tags: 
+        - Users
+      security:
+        - bearerAuth: []
+      summary: Return a user by id
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: 
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                user:
+                  $ref: '#/components/schemas/User'  
+              example:
+                success: true
+                user:
+                  id: 1
+                  firstName: John
+                  middleName: 
+                  lastName: Smith
+                  email: johnsmith@gmail.com
+                  password: Admin123
+                  confirmPassword: Admin123
+                  city: Los Angeles
+                  state: California(CA)
+                  zipCode: 90001
+                  dob: '1998-03-11'
+                  gender: Male
+                  streetAddress: Los Angeles, California
+                  profile: ''
+                  active: true
+                  jwtToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJzdXBlcmFkbWluQGFkbWluLmNvbSIsImlhdCI6MTY3MjIzMzMyNCwiZXhwIjoxNjcyMzE5NzI0fQ.Mnx2PjEa53SszM0ViFMvqVDNsV9FYi8Et0D9ijqtt3I'
+    put:
+      security:
+        - bearerAuth: []
+      summary: Update user
+      tags: 
+        - Users
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema: 
+            type: integer
+      requestBody:
+         required: true
+         content:
+           application/json: 
+             schema:
+                $ref: '#/components/schemas/UpdateUser'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: 
+                    type: boolean 
+                  user:
+                    type: object
+                    $ref: '#/components/schemas/User'   
+  /users/add-user:
+    post:
+      tags: 
+        - Users
+      security:
+        - bearerAuth: []
+      summary: Add new user to system
+      requestBody:
+        required: true 
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Signup'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: 
+                  success:
+                    type: boolean
+                  user:
+                    $ref: '#/components/schemas/User'
+  /users/profile:
+    post:
+      summary: Upload user profile
+      consumes: 
+        - multipart/form-data
+      tags: 
+        - Users
+      security:
+        - bearerAuth: []
+      requestBody: 
+        content:
+          multipart/form-data:
+            schema: 
+              $ref: '#/components/schemas/Profile'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean 
+                  message:
+                    type: string
